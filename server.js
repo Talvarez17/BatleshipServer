@@ -12,8 +12,7 @@ const clients = {};
 io.on("connection", (socket) => {
 
   // Destructuramos los datos que se obtienen del helper
-  const { addClient, removeClient, newGame, sendShips, shot, end } =
-    clientsHelperFunctionGenerator(clients, socket, io);
+  const { addClient, removeClient, newGame, sendShips, shot, end } = clientsHelperFunctionGenerator(clients, socket, io);
 
   addClient();
 
