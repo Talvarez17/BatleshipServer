@@ -12,8 +12,8 @@ const clients = {};
 io.on("connection", (socket) => {
 
   // Destructuramos los datos que se obtienen del helper
-  const { addClient, removeClient, newGame, sendShips, shot, end } = clientsHelperFunctionGenerator(clients, socket, io);
-
+  const { addClient, removeClient, newGame, sendShips, shot, end, lista } = clientsHelperFunctionGenerator(clients, socket, io);
+  
   addClient();
 
   socket.on("newGame", newGame);
@@ -30,6 +30,8 @@ io.on("connection", (socket) => {
     // Logic to let a user join as an observer
     // This might involve sending the current game state to the observer
   });
+
+  socket.on("obtener-partidas", lista)
 });
 
 io.listen(3001);
