@@ -12,7 +12,7 @@ const clients = {};
 io.on("connection", (socket) => {
 
   // Destructuramos los datos que se obtienen del helper
-  const { addClient, removeClient, newGame, sendShips, shot, end, lista } = clientsHelperFunctionGenerator(clients, socket, io);
+  const { addClient, removeClient, newGame, sendShips, shot, end, lista, addVisitor } = clientsHelperFunctionGenerator(clients, socket, io);
   
   addClient();
 
@@ -26,9 +26,8 @@ io.on("connection", (socket) => {
 
   socket.on("disconnect", removeClient);
 
-  socket.on("viewGame", (gameId) => {
-    // Logic to let a user join as an observer
-    // This might involve sending the current game state to the observer
+  socket.on("viewGame", (data) => {
+     addVisitor(data[0], data[1]);
   });
 
   socket.on("obtener-partidas", lista)
