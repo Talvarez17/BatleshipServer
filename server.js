@@ -8,29 +8,53 @@ const io = require("socket.io")({
 
 const clients = {};
 
-// Definimos lo que sucede con cada conexión
 io.on("connection", (socket) => {
 
-  // Destructuramos los datos que se obtienen del helper
   const { addClient, removeClient, newGame, sendShips, shot, end, lista, addVisitor } = clientsHelperFunctionGenerator(clients, socket, io);
-  
-  addClient();
 
-  socket.on("newGame", newGame);
 
-  socket.on("ships", sendShips);
+  socket.on("seleccion", (data) => {
 
-  socket.on("shot", shot);
+    switch (data.type) {
 
-  socket.on("end", end);
+      case "PLAYER":
 
-  socket.on("disconnect", removeClient);
+        addClient();
 
-  socket.on("viewGame", (data) => {
-     addVisitor(data[0], data[1]);
-  });
+        socket.on("newGame", newGame);
 
-  socket.on("obtener-partidas", lista)
+        socket.on("ships", sendShips);
+
+        socket.on("shot", shot);
+
+        socket.on("end", end);
+
+        socket.on("disconnect", removeClient);
+
+        console.log("Eres un jugador");
+        
+        break;
+
+      case "VIEWER":
+
+        //Removemos el cliente si por alguna razon y estaba registrados
+        removeClient();
+
+        socket.on("obtener-partidas", lista)
+
+        socket.on("viewGame", (data) => {
+          addVisitor(data[0], data[1]);
+        });
+
+        console.log("Eres un visitante");
+
+        break;
+
+      default:
+        break;
+    }
+  })
+
 });
 
 io.listen(3001);
