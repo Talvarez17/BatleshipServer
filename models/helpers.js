@@ -56,20 +56,27 @@ const clientsHelperFunctionGenerator = (clients, socket, io, viewers) => {
 
     const sendShips = (ships) => {
         const opponentSocket = getSocketById(clients[socket.id]);
-        opponentSocket.emit("opponentShips", ships);
-        updateViewer("opponentShips", ships)
+        if (opponentSocket) {
+            opponentSocket.emit("opponentShips", ships);
+            action2Viewer("opponentShips", ships)
+        }
     };
 
     const shot = (coordinate) => {
         const opponentSocket = getSocketById(clients[socket.id]);
-        opponentSocket.emit("shot", coordinate);
-        updateViewer("shot", coordinate)
-    };
+        if (opponentSocket) {
+            opponentSocket.emit("shot", coordinate);
+            action2Viewer("shot", coordinate)
+        };
+
+    }
 
     const end = (coordinate) => {
         const opponentSocket = getSocketById(clients[socket.id]);
-        opponentSocket.emit("end", coordinate);
-        updateViewer("end", coordinate)
+        if (opponentSocket) {
+            opponentSocket.emit("end", coordinate);
+            action2Viewer("end", coordinate)
+        }
     };
 
     const lista = () => {
@@ -81,15 +88,23 @@ const clientsHelperFunctionGenerator = (clients, socket, io, viewers) => {
         console.log(viewers);
     }
 
-    const updateViewer = (action, data) => {
+    const action2Viewer = (action, data) => {
         Object.keys(viewers).forEach((viewer) => {
-            if (viewers[viewer][0] == socket || viewers[viewer][1] == socket) {
-                socket.to(viewer).emit(action, data);
+            if (viewers[viewer][0] == socket.id || viewers[viewer][1] == socket.id) {
+                socket.to(viewer).emit(action, {data: data, sender: socket.id});
+            }
+        })
+    }
+    
+    const updateViewer = (data) => {
+        Object.keys(viewers).forEach((viewer) => {
+            if (viewers[viewer][0] == socket.id || viewers[viewer][1] == socket.id) {
+                socket.to(viewer).emit("viewer-states", data);
             }
         })
     }
 
-    return { addClient, removeClient, newGame, sendShips, shot, end, lista, addVisitor };
+    return { addClient, removeClient, newGame, sendShips, shot, end, lista, addVisitor, updateViewer };
 };
 
 module.exports = { clientsHelperFunctionGenerator };

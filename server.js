@@ -10,18 +10,20 @@ const clients = {};
 const viewers = {};
 
 io.on("connection", (socket) => {
-
-  const { addClient, removeClient, newGame, sendShips, shot, end, lista, addVisitor } = clientsHelperFunctionGenerator(clients, socket, io, viewers);
-
+  
+  const { addClient, removeClient, newGame, sendShips, shot, end, lista, addVisitor, updateViewer } = clientsHelperFunctionGenerator(clients, socket, io, viewers);
+  
   socket.on("newGame", newGame);
-
+  
   socket.on("ships", sendShips);
-
+  
   socket.on("shot", shot);
-
+  
   socket.on("end", end);
-
+  
   socket.on("disconnect", removeClient);
+  
+  socket.on("viewer-states", updateViewer);
 
   socket.on("view-game", (data) => {
     addVisitor(data[0], data[1]);
@@ -34,9 +36,9 @@ io.on("connection", (socket) => {
       case "PLAYER":
 
         addClient();
-        
+
         console.log("Eres un jugador");
-        
+
         break;
 
       case "VIEWER":
@@ -45,6 +47,8 @@ io.on("connection", (socket) => {
         removeClient();
 
         socket.on("obtener-partidas", lista);
+
+
 
         console.log("Eres un visitante");
 
